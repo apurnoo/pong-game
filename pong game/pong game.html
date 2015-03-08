@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</body>
+
+
+ <canvas id="canvas" width="500" height="555" style="border:3px solid black;margin:auto"></canvas>
+
+ <script type="text/javascript">
+
+var canvas = document.getElementById('canvas');
+var c = canvas.getContext('2d');
+var paddle,width=500,height=555,paddlecolor= 'green', ballcolor= 'red',pwidth=90, pheight=15,ballradius=10,px=width/2-pwidth/2;
+var ballx = width/2;
+var bally = height/2;
+var ballr = ballradius;
+var speed = 15;
+var ix = 2,iy=2;
+var brickcolor = ["#FF1C0A", "#FFFD0A", "#00A308", "#0008DB", "#EB0093", "#00A308"];
+var colors = "#EB0093";
+var brickheight = [100, 100, 100, 100, 100, 100];
+var point=0;
+var gameon = 1;
+
+var removebricks = new Array(5);
+  for (var i = 0; i < 5; i++) {
+    removebricks[i] = new Array(5);
+  };
+  for (var i = 0; i < 5; i++) {
+  	for (var j = 0; j < 5; j++) {
+  		removebricks[i][j] = 1;
+  	};
+  };
+  var heightbricks = new Array(6);
+  for (var i = 0; i < 6; i++) {
+    heightbricks[i] = new Array(5);
+  };
+  for (var i = 0; i < 6; i++) {
+  	for (var j = 0; j < 5; j++) {
+  		heightbricks[i][j] = i*20;
+  	};
+  };
+
+function startgame(){
+	return setInterval(draw, speed);
+}
+
+
+function drawcircle(){
+	c.beginPath();
+	c.fillStyle= ballcolor;
+	c.arc(ballx,bally,ballradius,0,2*Math.PI);
+	c.fill();
+	c.closePath();
+	
+	if (ballx > width-ballradius) {
+         ix = -ix;
+	};
+	if (ballx < ballradius) {
+         ix = -ix;
+	};
+	if (bally < ballradius) {
+         iy = -iy;
+	};
+	if (bally > height - ballradius-pheight+3) {
+		if (ballx> px && ballx < px+pwidth) {
+         iy = -iy;
+        } else {
+        	iy = 0;
+        	ix=0;
+        	gameon = 0;
+        }
+	};
+	ballx = ballx + ix;
+	bally = bally + iy;
+}
+
+function drawpaddle(){
+   c.beginPath();
+   c.fillStyle = paddlecolor;
+   c.fillRect(px,height-pheight,pwidth,height);
+   c.closePath;
+}
+
+function onKeyDown(evt) {
+  if (evt.keyCode == 39 && px < width-pwidth+11) {px = px + 11;}
+  else if (evt.keyCode == 37 && px > 0-11) {px = px - 11;}
+  
+}
+ 
+
+ 
+
+document.addEventListener("keydown", function(evt) {
+		if (evt.keyCode == 39 && px < width-pwidth+11) {px = px + 11;}
+  else if (evt.keyCode == 37 && px > 0-11) {px = px - 11;}
+	});
+
+function drawbricks(){
+
+	var l =0;
+	for(var i =0; i<5; i++){
+		var m=i+1;
+		for(var j =0; j<5; j++){
+		if( j*100 < ballx && heightbricks[i][j]<bally && (j+1)*100>ballx && heightbricks[m][j]>bally){
+			heightbricks[m][j]=0;
+     	 iy = -iy;
+     	 removebricks[i][j] = 0;
+     	 point=point+1;
+
+     	 if (point>6 && point<12) {
+     	 	speed = 14;
+     	 	startgame();
+     	 } else if (point>11 && point<17){
+     	 	speed = 13;
+     	 	startgame();
+     	 } else if (point >16) {
+     	 	speed = 11;
+     	 	startgame();
+     	 };
+
+
+        } else if (removebricks[i][j]==1){
+        c.beginPath();
+         c.fillStyle = brickcolor[l];
+         c.fillRect(j*100,i*20,100,20);
+         c.closePath;
+     }
+         if (l<5) {
+         l++;
+     } else {
+     	l=0;
+     }
+       }
+	}
+}
+function gameover(){
+	c.clearRect(0, 0, 500, 555);
+	c.fillStyle = "#000";
+	c.fillText("Game Over", 250, 250);
+	c.fillText("Your score:" + point, 250, 270);
+}
+
+
+function draw(){
+   c.clearRect(0, 0, 500, 555);
+   drawcircle();
+  drawpaddle();
+  drawbricks();
+  c.fillStyle = "#000";
+	c.fillText("SCORE: " + point, 250, 250);
+	if (gameon== 0 ) {
+		gameover();
+	};
+}
+ 
+startgame();
+ </script>
+
+</html>
